@@ -50,9 +50,68 @@ sep_new <-
 
 a) Make a table using **gt** which shows the five courses with the biggest increase. Use the [How to make a table](https://davidkane9.github.io/PPBDS/tools.html#how-to-make-a-table) section of *The Primer*.
 
+```{r, q1a}
+
+increase <- inner_join(sep_old, sep_new, by = "id", suffix = c("_old", "_new")) %>%
+  mutate(delta = u_grad_new - u_grad_old) %>%
+  arrange(desc(delta)) %>%
+  select("name_old", "department_old","delta") %>%
+head(5) %>%
+  gt() %>%
+  tab_header(title = "Top 5 Classes with Largest Enrollment Increases") %>%
+  cols_label(name_old = "Name",
+             department_old = "Department",
+             delta = "Change")
+increase
+
+
+```
+
 b) Make a table using **gt** which shows the five courses with the biggest decrease.
 
+```{r, q1b}
+
+decrease <- inner_join(sep_old, sep_new, by = "id", suffix = c("_old", "_new")) %>%
+  mutate(delta = u_grad_new - u_grad_old) %>%
+  arrange((delta)) %>%
+  select("name_old", "department_old","delta") %>%
+head(5) %>%
+  gt() %>%
+  tab_header(title = "Top 5 Classes with Largest Enrollment Decreases") %>%
+  cols_label(name_old = "Name",
+             department_old = "Department",
+             delta = "Change")
+decrease
+
+
+```
+
 c) Make a nice looking graphic which shows these 10 courses.
+
+``` {r, q1c}
+
+increase <- inner_join(sep_old, sep_new, by = "id", suffix = c("_old", "_new")) %>%
+  mutate(delta = u_grad_new - u_grad_old) %>%
+  arrange(desc(delta)) %>%
+  select("name_old", "department_old","delta") %>%
+head(5)
+
+decrease <- inner_join(sep_old, sep_new, by = "id", suffix = c("_old", "_new")) %>%
+  mutate(delta = u_grad_new - u_grad_old) %>%
+  arrange((delta)) %>%
+  select("name_old", "department_old","delta") %>%
+head(5)
+
+full_join(increase, decrease, by = c("delta", "name_old", "department_old")) %>%
+arrange(delta) %>%
+  ggplot(aes(x = name_old, y = delta, fill = department_old)) +
+  geom_col() +
+  labs(title = "Courses By Largest Enrollment Changes",
+       subtitle = "Gen Eds are unpopular",
+       x = "Name", y = "Change") +
+  coord_flip()
+
+```
 
 d) Write down some thoughts about what might explain these increases and decreases. Or is it all just random? How would we know?
 
